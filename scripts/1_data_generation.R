@@ -167,6 +167,6 @@ trial <- data_transform(field_dataset)
 
 nets <- lapply(trial[-1], tib_to_matrix)
 
-
-
+indices <- c('connectance', 'ISA', 'weighted NODF')
+lapply(nets, function(x) bipartite::networklevel(x, index = indices))
 

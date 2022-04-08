@@ -167,6 +167,7 @@ trial <- data_transform(field_dataset)
 
 nets <- lapply(trial[-1], tib_to_matrix)
 
-indices <- c('connectance', 'ISA', 'weighted NODF')
-lapply(nets, function(x) bipartite::networklevel(x, index = indices))
+indices <- c('connectance', 'ISA', 'weighted NODF', 'H2')
+results_tib <- lapply(nets, function(x) bipartite::networklevel(x, index = indices)) %>%
+  bind_rows(.id = 'normalisation_type')
 

@@ -58,6 +58,9 @@ field_data_gen <- function(n_upper_individuals, n_upper_species,
     # give the interactions a random strength between 0 and 1
     mutate(interaction_strength = runif(nrow(.)))
   
+  if(nrow(realised_edges) <1){
+    stop('There are no edges!')
+  }
   
   # now combine it with the metadata for each individual ID, so we
   # can construct networks with different normalisation techniques

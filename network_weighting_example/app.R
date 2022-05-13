@@ -6,7 +6,7 @@ library(here)
 library(bipartite)
 library(dplyr)
 library(tidyr)
-source(here('scripts', 'datagen_functions.R'))
+source("https://raw.githubusercontent.com/hemprichbennett/network_weighting/development/scripts/datagen_functions.R")
 
 indices <- c('connectance', 'ISA', 'weighted NODF', 'H2')
 

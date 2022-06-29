@@ -6,10 +6,12 @@ library(here)
 library(bipartite)
 library(dplyr)
 library(tidyr)
+library(ggraph)
 source("https://raw.githubusercontent.com/hemprichbennett/network_weighting/development/scripts/datagen_functions.R")
+source("https://raw.githubusercontent.com/hemprichbennett/network_weighting/development/scripts/plot_mats.R")
 
 indices <- c('connectance', 'ISA', 'weighted NODF', 'H2')
-
+set.seed(123)
 # Define UI for application
 ui <- fluidPage(
   
@@ -45,7 +47,8 @@ ui <- fluidPage(
       
       # Show the resulting network values
       mainPanel(
-         dataTableOutput("out_table")
+         dataTableOutput("out_table"),
+         plotOutput("out_plot")
       )
    )
 )
@@ -73,6 +76,16 @@ server <- function(input, output) {
      
     print(out_vals)
      
+   })
+   output$out_plot <- renderPlot({
+     field_dataset <- field_data_gen(n_upper_individuals = input$n_upper_i,
+                                     n_upper_species = input$n_upper_sp,
+                                     n_lower_individuals = input$n_lower_i,
+                                     n_lower_species = input$n_lower_sp,
+                                     prop_realised_interactions = 0.2)
+     
+     transformed <- data_transform(field_dataset)
+     plot_t_list(t_list = transformed)
    })
 }
 

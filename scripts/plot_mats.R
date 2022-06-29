@@ -1,4 +1,6 @@
 plot_t_list <- function(t_list){
+  plot_list <- list()
+  z <- 1
   for(i in 2:length(t_list)){
     chosen_mat <- t_list[[i]]
     

@@ -4,6 +4,7 @@
 library(shiny)
 library(here)
 library(bipartite)
+library(igraph)
 library(dplyr)
 library(tidyr)
 library(ggraph)

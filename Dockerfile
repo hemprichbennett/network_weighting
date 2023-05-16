@@ -16,6 +16,6 @@ RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.
 
 
 WORKDIR /home/rstudio
-RUN Rscript -e "install.packages(c('here', 'tidyverse', 'BiocManager', 'remotes', 'shiny', 'igraph', 'bipartite', 'ggraph'), repos = c(CRAN = 'https://cloud.r-project.org'), lib = '/usr/local/lib/R/site-library');"
+RUN Rscript -e "install.packages(c('here', 'tidyverse', 'BiocManager', 'remotes', 'methods', 'utils', 'Rcpp', 'shiny', 'igraph', 'bipartite', 'ggraph'), repos = c(CRAN = 'https://cloud.r-project.org'), lib = '/usr/local/lib/R/site-library');"
 
 RUN chown -R rstudio:rstudio /home/rstudio/

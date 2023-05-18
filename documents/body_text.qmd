@@ -1,0 +1,15 @@
+---
+title: "Network weighting"
+format: html
+editor: visual
+---
+
+# Introduction
+The study of ecological networks has been occurring for gazillions of years, and because academics are insular, its mostly been treated as a standalone area of ecology and biology, rather than a field of both biological sciences and network sciences. This slightly insular approach has led to a field that borrows some things from network theory, but views it as a bit of an estranged cousin and so doesn't really interact with it much.
+In a case of history repeating itself, the development of high-throughput sequencing (HTS) has led to the exciting new hybrid between molecular ecology and ecological networks: molecular ecological networks. This field tends to be happy to use the software and packages typically used by the more old-school network ecologists (cough, bipartite, cough), but has often been a bit light in its understanding of the theory behind them, focussing more on the genetic techniques that led to the source data.
+The creation of an ecological network involves many theoretical choices, regardless of if the data was obtained by observational or molecular means. Traditional network ecologists have developed many best-practices around network weighting etc, but in the molecular literature the question of how best to weight a dataset tends to revolve around how representative sequence counts are of biomass, or interaction strength.
+In their most basic form, ecological networks are represented as a list of interactions between different nodes, where an interaction is either present or not. These nodes usually denote species, and the interaction present could be of various types such as pollination, predation, parasitism, etc. In these cases the potential interaction is binary: either it occurs, or it doesn't.
+
+Weighting gives more information, but is contentious and has large impacts on the dataset. /10.1016/j.ecocom.2007.05.002
+
+

@@ -2,14 +2,85 @@
 title: "Network weighting"
 format: html
 editor: visual
+bibliography: bibliography.bib
+link-citations: true
+execute:
+  echo: false
+  messages: false
+  warnings: false
 ---
 
+```{r setup}
+library(tidyverse)
+library(here)
+```
+
 # Introduction
-The study of ecological networks has been occurring for gazillions of years, and because academics are insular, its mostly been treated as a standalone area of ecology and biology, rather than a field of both biological sciences and network sciences. This slightly insular approach has led to a field that borrows some things from network theory, but views it as a bit of an estranged cousin and so doesn't really interact with it much.
-In a case of history repeating itself, the development of high-throughput sequencing (HTS) has led to the exciting new hybrid between molecular ecology and ecological networks: molecular ecological networks. This field tends to be happy to use the software and packages typically used by the more old-school network ecologists (cough, bipartite, cough), but has often been a bit light in its understanding of the theory behind them, focussing more on the genetic techniques that led to the source data.
-The creation of an ecological network involves many theoretical choices, regardless of if the data was obtained by observational or molecular means. Traditional network ecologists have developed many best-practices around network weighting etc, but in the molecular literature the question of how best to weight a dataset tends to revolve around how representative sequence counts are of biomass, or interaction strength.
+
+The study of ecological networks has been occurring for gazillions of years, and because academics are insular, its mostly been treated as a standalone area of ecology and biology, rather than a field of both biological sciences and network sciences. This slightly parochial approach has led to a field that borrows some things from network theory, but views it as a bit of an estranged cousin and so doesn't really interact with it much.
+
+In a case of history repeating itself, the development of high-throughput sequencing (HTS) has led to the exciting new hybrid between molecular ecology and ecological networks: molecular ecological networks. This field tends to be happy to use the software and packages typically used by the more old-school network ecologists (cough, bipartite, cough), but has often been a bit light in its understanding of the theory behind them, focusing more on the genetic techniques that led to the source data.
+
+The creation of an ecological network involves many theoretical choices, regardless of if the data was obtained by observational or molecular means. Traditional network ecologists have developed many best-practices around network weighting etc., but in the molecular literature the question of how best to weight a dataset tends to revolve around the generation of sequence data itself.
+
 In their most basic form, ecological networks are represented as a list of interactions between different nodes, where an interaction is either present or not. These nodes usually denote species, and the interaction present could be of various types such as pollination, predation, parasitism, etc. In these cases the potential interaction is binary: either it occurs, or it doesn't.
 
-Weighting gives more information, but is contentious and has large impacts on the dataset. /10.1016/j.ecocom.2007.05.002
+Weighting gives more information, but is contentious and has large impacts on the dataset (e.g. @scottiWeightingScaleDependence2007). In the case of a binary network we only have data that says "insect species *A* and *C* visited flower species *B*, but insect species *B* did not", whereas in a weighted network dataset there can be more information contained, for example "insect species *A* visited flower species *B* 10 times, insect species *C* visited the flower 2 times".
 
+This, unfortunately, is where it all gets tricky. How do we decide what a useful weighting is? How does it vary between different techniques? In its simplest form, it's best to have the interaction weighting be a form of interaction *strength*, or at least a proxy for it. A species consumes x biomass of a different species, or something. But how does this interact with the abundance of the species themselves, or their size? Is a lion consuming a single wildebeest more consequential than a bird consuming a single insect? And how do these relate to the probability of detection? It's easier to see the behaviour of the lions than a small bird, so those interactions may be over-represented in the dataset.
 
+In much of traditional network ecology it's become routine to standardise network interaction strengths. If an individual is observed *x* times but only observed consuming a resource *y* of those times, the *x* and *y* are relevant values, and so the *x* interactions are standardised by the *y*. This is perhaps most relevant for molecular network generation when traditional networks have been created from physical materials, rather than direct observations of behaviour. In this case, rather than observing insects travelling to flowers for example, we could observe the number of grains of pollen of a given species on a captured insect. It's intuitively clear that if we find pollen of a given plant species on 10 individuals apiece of two insect species, they should have the same interaction strength if we caught 10 individuals each of those two species. However if we actually caught 10 individuals of species *A* but 100 individuals of species *B*, those 10 interactions apiece is a stronger interaction for species *A*, as they interact with it more frequently per-capita.
+
+In molecular networks this level of nuance is typically missing: arguments around network weighting are typically around if we should weight networks at all, and if so, how representative the count data from our sequencing is [@deagleCountingDNAMetabarcoding2019]. Metabarcoding approaches are subject to numerous well-documented biases and these have an undeniable impact on the datasets generated, which leads to argument over the suitability of using them in a quantitive manner rather than a simple list of detected interactions. Where researchers agree to use weighted networks, there is then somewhat of a dichotomy between using binary interactions for individuals, which are then summed across the species (FOO) or a measure including the sequence counts per-individual. To be clear, these considerations are also important, but they should not be the end of consideration.
+
+When using FOO without any normalisation of those frequencies by the number of individuals observed, the data generated inherently assumes that a specialist *individual* has less impact than a generalist *individual*, regardless of species. If a single animal is found to have consumed a single species, it will have an interaction strength of 1, as 1 interaction was counted. However if a different individual interacted with 2 species it would have an interaction strength of 2, as 2 interactions were detected. While it is possible that animal 2 had consumed double the impact on its ecosystem, perhaps by consuming double the biomass of animal 1, there is nothing in the input data that justifies that assumption. These issues are minor on the level of such a small hypothetical example, but become more problematic when scaled up to larger multi-species networks, disproportionately inflating the impact of generalists on their systems or reducing the impact of specialists.
+
+Consider a hypothetical system where two species of predators coexist that are identical, apart from their foraging strategy. Individuals of both species consume 1g of prey per night, but as species *A* is a generalist it obtains that by consuming 5 prey taxa, and the specialist species *B* obtains that by consuming 2 prey taxa. In a system where only two individuals of each species were studied, a matrix of their interactions could look like
+
+```{r, echo=F, messages=F}
+#| label: tbl-initial
+#| tbl-cap: "Initial data"
+readr::read_csv(here('documents', 'manual_tables', 'input_data.csv')) %>% knitr::kable()
+```
+
+Under FOO analyses, these detections per-individual would be converted to a binary presence or absence, denoted by a 1 or 0 for each individual and the detected prey:
+
+```{r, echo=F, messages=F}
+#| label: tbl-binary
+#| tbl-cap: "Initial data, converted to binary"
+readr::read_csv(here('documents', 'manual_tables', 'binary.csv')) %>% knitr::kable()
+```
+
+Then, to convert the dataset to one of species-level information, using FOO these binary interactions would be summed per-species, giving:
+
+```{r, echo=F, messages=F}
+#| label: tbl-FOO
+#| tbl-cap: "FOO data"
+readr::read_csv(here('documents', 'manual_tables', 'FOO.csv')) %>% knitr::kable()
+```
+
+In this process, the network's structure has been subtly altered. All 4 predators consumed the same biomass, and so in a network where interaction strength is used as a proxy for biomass consumed (for example), the two species should have the same overall interaction weight. The input data and analysed data agree on the species having differing *degrees*: species *A* has a degree of 10, as it interacted with 10 prey species, while species *B* has a degree of 4 because they interacted with 10 prey species. But the weighting differs dramatically, with species *A* having a total weight of 10, while species *B* has a total weighting of 4. The manner of data being processed has contained inherent assumptions which may then have substantial impact on subsequent analyses.
+
+Alternative approaches have been suggested, though are rarely implemented. Whether the number of sequences obtained is used or not, it is possible to normalise the interactions detected per-individual before summarising them per-species. %FOO is one proposed solution, where the interactions are still summed to binary per-individual, as per @tbl-binary, but then dividing each binary interaction by the number of interactions detected for that individual. Because of the simplicity of this example dataset, the '1's of both individuals of species *A* would be divided by 5, and the '1's of both individuals of species *B* would be divided by 2. Thus, the data would look exactly like that in @tbl-initial. When then summed across the individuals of each species, this would give:
+
+```{r, echo=F, messages=F}
+#| label: tbl-percent_FOO
+#| tbl-cap: "Percentage FOO data"
+readr::read_csv(here('documents', 'manual_tables', 'percent_FOO.csv')) %>% knitr::kable()
+```
+
+# Methods
+
+## Data synthesis
+
+## Data transformation and normalisation
+
+## Network calculations
+
+## Statistical analyses
+
+# Results
+
+# Discussion
+
+# Bibliography

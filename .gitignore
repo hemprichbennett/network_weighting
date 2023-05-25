@@ -9,3 +9,5 @@
 *.js
 *.css
 *.woff
+*.DS_Store
+.bash_history

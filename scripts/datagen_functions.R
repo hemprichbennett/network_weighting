@@ -16,33 +16,51 @@ field_data_gen <- function(n_upper_individuals, n_upper_species,
   
   upper_species <- LETTERS[1:n_upper_species]
   
-  upper_individuals <- tibble(upper_id = seq(1,n_upper_individuals),
-                              # with equal probability, randomly assign each of our individuals 
-                              # to one of our species
-                              upper_sp = sample(upper_species, 
-                                                size = n_upper_individuals, 
-                                                replace = T),
-                              upper_full_name = paste(upper_id, upper_sp, sep = '_')
-  )
+  finished <- F
+  while(finished == F){
+    upper_individuals <- tibble(upper_id = seq(1,n_upper_individuals),
+                                # with equal probability, randomly assign each of our individuals 
+                                # to one of our species
+                                upper_sp = sample(upper_species, 
+                                                  size = n_upper_individuals, 
+                                                  replace = T),
+                                upper_full_name = paste(upper_id, upper_sp, sep = '_')
+    )
+    # hacky way to prevent there from occasionally being a sample of the
+    # species-pool that is randomly smaller than requested
+    if(length(unique(uppter_individuals$upper_sp) == n_upper_species)){
+      finished <- T
+    }
+  }
   
   
-  # make all the possible combinations of two letters
-  lower_species <- expand_grid(l1 = letters, l2 = letters) %>%
-    # turn them into strings
-    mutate(lower_sp = paste0(l1, l2)) %>%
-    # select only as many rows as we need
-    top_n(n_lower_species) %>%
-    # pull those strings into a vector
-    pull(lower_sp)
   
-  lower_individuals <- tibble(lower_id = seq(1,n_lower_individuals),
-                              # with equal probability, randomly assign each of our individuals 
-                              # to one of our species
-                              lower_sp = sample(lower_species, 
-                                                size = n_lower_individuals, 
-                                                replace = T),
-                              lower_full_name = paste(lower_id, lower_sp, sep = '_')
-  )
+  finished <- F
+  while(finished == F){
+    # make all the possible combinations of two letters
+    lower_species <- expand_grid(l1 = letters, l2 = letters) %>%
+      # turn them into strings
+      mutate(lower_sp = paste0(l1, l2)) %>%
+      # select only as many rows as we need
+      top_n(n_lower_species) %>%
+      # pull those strings into a vector
+      pull(lower_sp)
+    
+    lower_individuals <- tibble(lower_id = seq(1,n_lower_individuals),
+                                # with equal probability, randomly assign each of our individuals 
+                                # to one of our species
+                                lower_sp = sample(lower_species, 
+                                                  size = n_lower_individuals, 
+                                                  replace = T),
+                                lower_full_name = paste(lower_id, lower_sp, sep = '_')
+    )
+    # hacky way to prevent there from occasionally being a sample of the
+    # species-pool that is randomly smaller than requested
+    if(length(unique(lower_individuals$lower_sp)) == n_lower_species){
+      finished <- T
+    }
+  }
+  
   
   
   # Make an edgelist --------------------------------------------------------

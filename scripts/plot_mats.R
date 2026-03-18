@@ -11,7 +11,8 @@ plot_t_list <- function(t_list){
     plot_list[[z]] <- ggraph(g) +
       geom_edge_link(alpha = .25, 
                      aes(width = weighting)) +
-      geom_node_point(aes(color = guild, size = 2)) + 
+      geom_node_point(aes(color = guild, size = 2)) +
+      scale_colour_viridis_d()+
       #geom_node_text(aes(label = name),  repel = TRUE)+
       theme_graph() +
       theme(legend.position = 'none')+ 

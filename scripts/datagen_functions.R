@@ -28,7 +28,9 @@ field_data_gen <- function(n_upper_individuals, n_upper_species,
     )
     # hacky way to prevent there from occasionally being a sample of the
     # species-pool that is randomly smaller than requested
-    if(length(unique(uppter_individuals$upper_sp) == n_upper_species)){
+    upper_sp_created <- length(unique(upper_individuals$upper_sp))
+    if(upper_sp_created == n_upper_species){
+      cat('length of upper individuals is', upper_sp_created, '\n')
       finished <- T
     }
   }
@@ -56,7 +58,8 @@ field_data_gen <- function(n_upper_individuals, n_upper_species,
     )
     # hacky way to prevent there from occasionally being a sample of the
     # species-pool that is randomly smaller than requested
-    if(length(unique(lower_individuals$lower_sp)) == n_lower_species){
+    lower_sp_created <- length(unique(lower_individuals$lower_sp))
+    if(lower_sp_created == n_lower_species){
       finished <- T
     }
   }

@@ -71,6 +71,8 @@ Alternative approaches have been suggested, though are rarely implemented. Wheth
 readr::read_csv(here('documents', 'manual_tables', 'percent_FOO.csv')) %>% knitr::kable()
 ```
 
+Now while the species have differing degrees, they have the same overall interaction strength. This provides a more nuanced quantitative picture of their impact on the network as a whole: one has many weak links, one has fewer but stronger links.
+
 # Methods
 
 ## Data synthesis

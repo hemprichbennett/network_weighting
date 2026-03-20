@@ -12,3 +12,6 @@
 *.DS_Store
 .bash_history
 *.docx
+*.png
+*.pdf
+results/*

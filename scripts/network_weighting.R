@@ -4,6 +4,14 @@ library(tidyverse)
 library(bipartite)
 library(here)
 
+# create output directories, if needed
+if(!dir.exists(here('results'))){
+  dir.create(here('results'))
+}
+if(!dir.exists(here('figures'))){
+  dir.create(here('figures'))
+}
+
 input_diet_data <- read_csv(here('data', 'raw_data', 'dummy_data.csv'))
 
 individual_names <- colnames(input_diet_data)[-1]
